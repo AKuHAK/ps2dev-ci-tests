@@ -1,0 +1,42 @@
+name: Tests
+
+on:
+  push:
+     branches:
+       - "master"
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    container: ps2dev/ps2dev:latest
+    permissions:
+      contents: write
+    steps:
+      - name: Install dependencies
+        run: |
+          sed -i 's/v3.19/edge/g' /etc/apk/repositories
+          echo "https://dl-cdn.alpinelinux.org/alpine/edge/testing" >> /etc/apk/repositories
+          apk add build-base git cmake curl jq bash hexdump zlib-dev xvfb mesa-gl mesa-dri-gallium perl
+          apk add pcsx2 --repository=http://dl-cdn.alpinelinux.org/alpine/edge/testing/
+      - uses: actions/checkout@v2
+      - name: Compile project
+        run: |
+          mkdir build
+          cd build
+          cmake ../tests
+          make
+      - name: Execute Tests
+        run: |
+          export DISPLAY=:1
+          Xvfb :1 -screen 0 1600x1200x24 2>/dev/null &
+          : #Xvfb :1 -screen 0 1600x1200x24 &
+          /usr/bin/pcsx2 -testconfig 
+          ls ~/.config/ 
+          ls ~/.config/PCSX2/inis/ 
+          cp PCSX2.ini ~/.config/PCSX2/inis/PCSX2.ini 
+          wget -O ~/.config/PCSX2/bios/rom.bin ${{ secrets.super_secret_ps2_rom_link }}
+          export PCSX2=/usr/bin/pcsx2
+          chmod +x filter.pl
+          cd build
+          make run_tests 
+          killall Xvfb
