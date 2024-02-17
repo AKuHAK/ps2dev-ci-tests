@@ -16,7 +16,7 @@ jobs:
       #     echo "https://dl-cdn.alpinelinux.org/alpine/edge/testing" >> /etc/apk/repositories
       #     apk add build-base git cmake curl jq bash hexdump zlib-dev xvfb mesa-gl mesa-dri-gallium perl colordiff
       #     apk add pcsx2 --repository=http://dl-cdn.alpinelinux.org/alpine/edge/testing/
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v3
       - name: Compile project
         run: |
           mkdir build
