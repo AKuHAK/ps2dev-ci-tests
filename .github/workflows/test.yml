@@ -9,8 +9,6 @@ jobs:
   build:
     runs-on: ubuntu-latest
     container: andrewmackrodt/pcsx2-x11:latest
-    permissions:
-      contents: write
     steps:
       # - name: Install dependencies
       #   run: |
